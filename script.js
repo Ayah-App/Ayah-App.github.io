@@ -20,7 +20,7 @@ function router() {
             ${navBar}
             <div class="welcome-card">
                 <h1>Welcome to Ayah</h1>
-                <p>Explore the Holy Quran seamlessly with Ayah. A fast, ad-free single-page web app featuring all 114 Surahs, beautiful Arabic text, and Sahih International English translations.</p>
+                <p>Explore the Holy Quran seamlessly with Ayah. A fast, ad-free single-page web app featuring all 114 Surahs, beautiful Arabic text, and Sahih International English translations.  WARNING, THE QURAN TEXT CAME FROM AL QURAN API IF YOU DO NOT TRUST THIS SOURCE USE ANOTHER WEBSITE LIKE https://www.awqaf.gov.ae/quran/</p>
                 <a href="#surahs" class="btn">Browse All Surahs</a>
             </div>
         `;
