@@ -84,7 +84,7 @@ async function renderSurahDetail(container, surahId, navBar) {
             // For all other Surahs, the API provides the standalone Bismillah as index 0.
             // We pull it out for our header banner and leave index 1 onwards as Verse 1, 2, 3...
             if (surahId !== 1 && surahId !== 9) {
-                if (arabicAyahs.length > 0 && arabicAyahs[0].text.includes("بِسْمِ")) {
+                if (arabicAyahs.length > 0 && arabicAyahs[0].text.includes("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ")) {
                     showBismillahBanner = true;
                     arabicAyahs = arabicAyahs.slice(1);
                     transAyahs = transAyahs.slice(1);
