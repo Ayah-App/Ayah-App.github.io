@@ -79,13 +79,16 @@ async function renderSurahDetail(container, surahId, navBar) {
 
             let showBismillahBanner = false;
 
-            // Surah Al-Fatihah (1) keeps Bismillah as part of verse 1.
-            // Surah At-Tawbah (9) has no Bismillah.
-            // Every other Surah has Bismillah as Ayah 1 from the API, so we slice it off and show a banner!
+            // Al-Fatihah (1) includes Bismillah as Ayah 1 natively.
+            // At-Tawbah (9) has no Bismillah at all.
+            // For all other Surahs, the API provides the standalone Bismillah as index 0.
+            // We pull it out for our header banner and leave index 1 onwards as Verse 1, 2, 3...
             if (surahId !== 1 && surahId !== 9) {
-                showBismillahBanner = true;
-                arabicAyahs = arabicAyahs.slice(1);
-                transAyahs = transAyahs.slice(1);
+                if (arabicAyahs.length > 0 && arabicAyahs[0].text.includes("بِسْمِ")) {
+                    showBismillahBanner = true;
+                    arabicAyahs = arabicAyahs.slice(1);
+                    transAyahs = transAyahs.slice(1);
+                }
             }
 
             surahCache[surahId] = {
@@ -94,7 +97,7 @@ async function renderSurahDetail(container, surahId, navBar) {
                 name: arabicData.data.name,
                 showBismillah: showBismillahBanner,
                 ayahs: arabicAyahs.map((ayah, index) => ({
-                    numberInSurah: index + 1, // Guarantees verses start at 1 cleanly
+                    numberInSurah: ayah.numberInSurah,
                     arabic: ayah.text,
                     translation: transAyahs[index] ? transAyahs[index].text : ""
                 }))
@@ -102,6 +105,8 @@ async function renderSurahDetail(container, surahId, navBar) {
         }
 
         const surah = surahCache[surahId];
+        if (!surah) throw new Error("Surah data not found");
+
         document.title = `Ayah - ${surah.number}. ${surah.englishName}`;
 
         let html = `
@@ -111,11 +116,11 @@ async function renderSurahDetail(container, surahId, navBar) {
                     <h2>${surah.number}. ${surah.englishName} (${surah.name})</h2>
                 </div>`;
 
-        // Hardcoded clean Bismillah banner for applicable surahs
+        // Render standalone Bismillah banner if active
         if (surah.showBismillah) {
             html += `
                 <div class="ayah-row" style="text-align: center; background: rgba(0,0,0,0.02); padding: 20px; margin-bottom: 20px; border-radius: 8px;">
-                    <div class="arabic-container" style="font-size: 1.8rem; margin-bottom: 10px;">
+                    <div class="arabic-container" style="font-size: 1.8rem; margin-bottom: 10px; font-family: 'Amiri', serif;">
                         بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
                     </div>
                     <div class="translation-container" style="color: #666; font-style: italic;">
@@ -150,6 +155,8 @@ async function renderSurahDetail(container, surahId, navBar) {
         container.innerHTML = html;
 
     } catch (error) {
+        console.error("Render error:", error);
+        surahCache[surahId] = null;
         container.innerHTML = `${navBar}<div class="welcome-card"><h2>Failed to load Surah verses. Please try again.</h2></div>`;
     }
 }
